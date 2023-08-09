@@ -1,8 +1,28 @@
 import { Notification } from 'components/Notification/Notification';
 import contactListCSS from './ContactList.module.css';
-import propTypes from 'prop-types';
+import { deleteContact } from 'redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts, getFilterQuery } from 'redux/selectors';
 
-export const ContactList = ({ filterList, onRemoveItem }) => {
+export const ContactList = () => {
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
+
+  const filterQuery = useSelector(getFilterQuery);
+
+  const checkSameContact = () => {
+    const normalaizedFilter = filterQuery.toLowerCase();
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalaizedFilter)
+    );
+  };
+
+  const filterList = checkSameContact();
+
+  const onRemoveContact = contactID => {
+    dispatch(deleteContact(contactID));
+  };
+
   const isFilterListEmpty = filterList.length;
   return isFilterListEmpty ? (
     <ul className={contactListCSS.contact_list}>
@@ -14,7 +34,7 @@ export const ContactList = ({ filterList, onRemoveItem }) => {
           </div>
           <button
             className={contactListCSS.contact_delete_btn}
-            onClick={() => onRemoveItem(id)}
+            onClick={() => onRemoveContact(id)}
           >
             Remove
           </button>
@@ -24,9 +44,4 @@ export const ContactList = ({ filterList, onRemoveItem }) => {
   ) : (
     <Notification message="No matches found" />
   );
-};
-
-ContactList.propTypes = {
-  filterList: propTypes.arrayOf(propTypes.shape).isRequired,
-  onRemoveItem: propTypes.func.isRequired,
 };

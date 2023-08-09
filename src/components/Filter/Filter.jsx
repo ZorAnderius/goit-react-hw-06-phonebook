@@ -1,7 +1,14 @@
+import { useDispatch, useSelector } from 'react-redux';
 import filterCSS from './Filter.module.css';
-import propTypes from 'prop-types';
+import { getFilterQuery } from 'redux/selectors';
+import { addFilterQuery } from 'redux/filterSlice';
 
-export const Filter = ({ value, filterContacts }) => {
+export const Filter = () => {
+  const dispatch = useDispatch();
+  const value = useSelector(getFilterQuery);
+
+  const onChangeFilterValue = e =>
+    dispatch(addFilterQuery(e.currentTarget.value));
   return (
     <div className={filterCSS.filter_container}>
       <label className={filterCSS.filter_label}>
@@ -11,13 +18,8 @@ export const Filter = ({ value, filterContacts }) => {
         className={filterCSS.filter_input}
         type="text"
         value={value}
-        onChange={filterContacts}
+        onChange={onChangeFilterValue}
       />
     </div>
   );
-};
-
-Filter.propTypes = {
-  value: propTypes.string.isRequired,
-  filterContacts: propTypes.func.isRequired,
 };
